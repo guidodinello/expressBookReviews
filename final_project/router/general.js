@@ -27,11 +27,11 @@ const getBookByISBN = (isbn) => {
             reject({ status: 404, message: `No books found for ISBN ${isbn}` })
     }) 
 }
-const filterBooksBy = (conditionFunc, message) => {
+const filterBooksBy = (conditionFunc, msg) => {
     return new Promise((resolve, reject) => {
         const matches = Object.values(books).filter(book => conditionFunc(book));
         if (matches.length === 0)
-            reject({ status: 404, message: `No books found for author ${author}` })
+            reject({ status: 404, message: msg })
         else
             resolve(matches)
     })  
@@ -61,7 +61,7 @@ public_users.get('/author/:author', async (req, res) => {
 });
 
 // Get all books based on title
-public_users.get('/title/:title', function (req, res) {
+public_users.get('/title/:title', async (req, res) => {
     return filterBooksBy(
         (book) => { book.title === req.params.title },
         `No books found for title ${req.params.title}`
@@ -71,7 +71,7 @@ public_users.get('/title/:title', function (req, res) {
 });
 
 //  Get book review
-public_users.get('/review/:isbn', function (req, res) {
+public_users.get('/review/:isbn', async (req, res) => {
     return getBookByISBN(req.params.isbn)
     .then(book => res.send(JSON.stringify(book.reviews, null, 4)))
     .catch(err => res.status(err.status).json({ message: err.message }))
